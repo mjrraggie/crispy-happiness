@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Quick Event</title>
+  <meta name="theme-color" content="#0f6cbd">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <style>
+    :root {
+      --bg: #f5f7fa; --card: #ffffff; --text: #1b1f24; --muted: #5b6573; --line: #d9dee5;
+      --accent: #0f6cbd; --accent-text: #ffffff; --ok: #107c41; --err: #c42b1c; --field: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111418; --card: #1b2027; --text: #e8ecf1; --muted: #9aa5b3; --line: #2e3640;
+        --accent: #4aa3ff; --accent-text: #0b1220; --ok: #54c27f; --err: #ff7b6b; --field: #141920;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    }
+    main { max-width: 520px; margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    h1 { font-size: 22px; margin: 0; }
+    .who { font-size: 13px; color: var(--muted); text-align: right; }
+    .who button { font-size: 13px; padding: 0; background: none; border: 0; color: var(--accent); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 4px; }
+    label:first-child { margin-top: 0; }
+    input, select, textarea {
+      width: 100%; font: inherit; color: var(--text); background: var(--field);
+      border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px;
+      font-size: 16px; /* prevents iOS zoom on focus */
+    }
+    textarea { resize: vertical; min-height: 44px; }
+    #quick { min-height: 76px; }
+    .row { display: flex; gap: 10px; }
+    .row > div { flex: 1; min-width: 0; }
+    .check { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--text); font-size: 15px; }
+    .check input { width: auto; }
+    button { font: inherit; cursor: pointer; }
+    .primary {
+      width: 100%; padding: 14px; border: 0; border-radius: 12px; margin-top: 16px;
+      background: var(--accent); color: var(--accent-text); font-weight: 600; font-size: 17px;
+    }
+    .primary:disabled { opacity: .55; }
+    .secondary {
+      width: 100%; padding: 12px; border-radius: 12px; margin-top: 10px;
+      background: transparent; color: var(--accent); border: 1px solid var(--line); font-weight: 600;
+    }
+    .hint { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+    .status { padding: 12px 14px; border-radius: 10px; margin-bottom: 14px; font-size: 15px; display: none; }
+    .status.ok { display: block; border: 1px solid var(--ok); color: var(--ok); }
+    .status.err { display: block; border: 1px solid var(--err); color: var(--err); }
+    .status a { color: inherit; font-weight: 600; }
+    .summary { font-size: 15px; margin: 10px 0 0; color: var(--muted); }
+    .summary strong { color: var(--text); }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Quick Event</h1>
+    <div class="who" id="who"></div>
+  </header>
+
+  <div id="status" class="status" role="status" aria-live="polite"></div>
+
+  <section class="card" id="setup" hidden>
+    <strong>Almost ready.</strong>
+    <p class="hint">Add your Microsoft Entra app's client ID to <code>config.js</code>. The README has the 5-minute setup.</p>
+  </section>
+
+  <section class="card" id="signin" hidden>
+    <p style="margin-top:0">Sign in with your church Microsoft account to add events straight to your Outlook calendar.</p>
+    <button class="primary" id="signinBtn">Sign in with Microsoft</button>
+  </section>
+
+  <form id="form" hidden autocomplete="off">
+    <section class="card">
+      <label for="quick">Type or dictate it</label>
+      <textarea id="quick" placeholder="Coffee with Josh tomorrow 3pm for 45 min @ Starbucks"></textarea>
+      <p class="hint">Tap the 🎤 on your keyboard to talk. Date, time, “for 2 hours”, and “@ place” are picked up automatically.</p>
+      <p class="summary" id="summary"></p>
+    </section>
+
+    <section class="card">
+      <label for="title">Title</label>
+      <input id="title" required>
+
+      <div class="check"><input type="checkbox" id="allDay"><label for="allDay" style="margin:0;color:inherit;font-size:inherit">All day</label></div>
+
+      <div class="row">
+        <div><label for="start">Starts</label><input id="start" type="datetime-local" required></div>
+      </div>
+      <div class="row">
+        <div><label for="end">Ends</label><input id="end" type="datetime-local" required></div>
+      </div>
+
+      <label for="location">Location</label>
+      <input id="location" placeholder="Optional">
+
+      <div class="row">
+        <div>
+          <label for="reminder">Reminder</label>
+          <select id="reminder">
+            <option value="-1">None</option>
+            <option value="0">At start</option>
+            <option value="5">5 min before</option>
+            <option value="15" selected>15 min before</option>
+            <option value="30">30 min before</option>
+            <option value="60">1 hour before</option>
+            <option value="1440">1 day before</option>
+          </select>
+        </div>
+        <div>
+          <label for="showAs">Show as</label>
+          <select id="showAs">
+            <option value="busy" selected>Busy</option>
+            <option value="tentative">Tentative</option>
+            <option value="free">Free</option>
+            <option value="oof">Away</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="calendar">Calendar</label>
+      <select id="calendar"><option value="">Default calendar</option></select>
+
+      <label for="notes">Notes</label>
+      <textarea id="notes" placeholder="Optional"></textarea>
+
+      <button class="primary" id="createBtn" type="submit">Add to Outlook</button>
+      <button class="secondary" id="resetBtn" type="button">Clear</button>
+    </section>
+  </form>
+</main>
+
+<script src="config.js"></script>
+<script src="vendor/msal-browser.min.js"></script>
+<script src="vendor/chrono.min.js"></script>
+<script src="parse.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
