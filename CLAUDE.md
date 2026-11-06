@@ -24,8 +24,10 @@ The user drives Claude from their phone. Work out where you're running first:
 - **On the Mac** (Remote Control or Desktop app): everything works, the same
   as at the desk: Messages, Outlook, OneDrive folder, every connector and
   agent. The user works mostly in web apps they're signed in to in Chrome:
-  prefer Claude in Chrome (their real, signed-in tabs) for Outlook,
-  OneDrive, RingCentral, Planning Center and similar. Never ask for or type
+  prefer Claude in Chrome (their real, signed-in tabs) for drafting,
+  sending and attaching in Outlook, OneDrive, RingCentral, Planning Center
+  and similar; it works better for them than the connectors, which are best
+  for quick reads and sweeps. Never ask for or type
   passwords; if a site is signed out, tell the user to sign in at the Mac.
   Helper scripts are in `scripts/mac-tools/` if nothing better is set up.
 - **In a cloud session** (`CLAUDE_CODE_REMOTE=true`): Microsoft 365 is
