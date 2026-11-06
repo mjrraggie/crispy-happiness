@@ -90,6 +90,26 @@ the Mac is off.
 | OneDrive read / upload | Yes | Read only |
 | Daily brief | Yes | Yes, can run on a schedule |
 
+### Using your signed-in web apps
+
+If you do most of your work in the browser (Outlook on the web, OneDrive,
+RingCentral, Planning Center), the Mac session drives your own Chrome through
+the **Claude in Chrome** extension. It works in the tabs where you're already
+signed in, so you never sign in from the phone or the cloud. From the phone
+you say "check my Outlook inbox" and Claude on the Mac opens the tab, reads
+it, drafts the reply, attaches the file and waits for you to say send.
+
+To set it up:
+
+1. Install Claude in Chrome from the Chrome Web Store on the Mac and sign in
+   with your Claude account.
+2. Sign in to your web apps in Chrome, and tick "keep me signed in" where
+   offered so sessions last.
+3. Add Chrome to System Settings > General > Login Items.
+4. `phone-setup.sh` already starts Remote Control with `--chrome`.
+
+Texts still go through the Messages app on the Mac. There is no web version.
+
 ### One-time Mac setup
 
 ```bash

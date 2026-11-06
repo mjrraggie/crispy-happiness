@@ -33,6 +33,9 @@ mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
 
 # caffeinate -i keeps the Mac from idle-sleeping while Remote Control runs.
 # script gives remote-control a terminal, which it expects.
+# --chrome lets the session use Claude in Chrome: your real Chrome window,
+# where you're already signed in to Outlook, OneDrive, RingCentral, Planning
+# Center and the rest.
 # Permission mode "default": anything that sends, deletes or changes things
 # asks you first, and the question shows up on your phone.
 cat > "$PLIST" <<PL
@@ -49,6 +52,7 @@ cat > "$PLIST" <<PL
     <string>$CLAUDE_BIN</string><string>remote-control</string>
     <string>--name</string><string>$NAME (phone)</string>
     <string>--permission-mode</string><string>default</string>
+    <string>--chrome</string>
   </array>
   <key>EnvironmentVariables</key>
   <dict>
@@ -73,7 +77,10 @@ Log: $LOG
 
 On your phone: Claude app > Code. Look for "$NAME (phone)".
 
-Two Mac settings finish the job (do them once):
+Three Mac settings finish the job (do them once):
+  0. Browser: install the Claude in Chrome extension in Google Chrome, sign in
+     to it with your Claude account, and leave Chrome open and signed in to
+     your web apps. Add Chrome to your Login Items so it reopens after restart.
   1. Don't sleep while plugged in:
        sudo pmset -c sleep 0
      (System Settings > Battery > Options > "Prevent automatic sleeping on
